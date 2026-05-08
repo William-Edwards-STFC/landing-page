@@ -12,30 +12,37 @@ async function queryMetric(metric: string) {
 
 export async function GET() {
   try {
-    const [coins, fruits, rewards] = await Promise.all([
+    const [coins, fruits, rewards, onlinePerBot] = await Promise.all([
       queryMetric("afkbot_coins_earned_total"),
       queryMetric("afkbot_fruits_earned_total"),
       queryMetric("afkbot_daily_rewards_total"),
+      queryMetric("afkbot_bot_online"),
     ]);
 
-    const botsMap: Record<string, { coins: number; fruits: number; rewards: number }> = {};
+    const botsMap: Record<string, { coins: number; fruits: number; rewards: number; online: boolean }> = {};
 
     for (const item of coins) {
       const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0 };
+      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0, online: false };
       botsMap[u].coins = Math.round(parseFloat(item.value[1]));
     }
 
     for (const item of fruits) {
       const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0 };
+      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0, online: false };
       botsMap[u].fruits = Math.round(parseFloat(item.value[1]));
     }
 
     for (const item of rewards) {
       const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0 };
+      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0, online: false };
       botsMap[u].rewards = Math.round(parseFloat(item.value[1]));
+    }
+
+    for (const item of onlinePerBot) {
+      const u = item.metric.username;
+      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0, online: false };
+      botsMap[u].online = parseFloat(item.value[1]) === 1;
     }
 
     const bots = Object.entries(botsMap)
