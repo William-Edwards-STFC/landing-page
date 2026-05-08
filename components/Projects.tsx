@@ -2,7 +2,7 @@ const projects = [
   {
     title: "AFK Bot Network",
     description:
-      "A fleet of 16 Minecraft bots built with Mineflayer. Fully containerised with Docker, deployed on a VPS, and monitored with a full Grafana + Prometheus + Loki observability stack. Structured JSON logging, per-bot metrics, and live log streaming.",
+      "A fleet of 16 bots built with javascript. Fully containerised with Docker, deployed on a VPS, and monitored with a full Grafana + Prometheus + Loki observability stack. Structured JSON logging, per-bot metrics, and live log streaming.",
     tags: ["Node.js", "Docker", "Grafana", "Prometheus", "Loki"],
     status: "Live",
   },
