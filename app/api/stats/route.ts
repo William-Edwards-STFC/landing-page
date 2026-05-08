@@ -12,37 +12,46 @@ async function queryMetric(metric: string) {
 
 export async function GET() {
   try {
-    const [coins, fruits, rewards, onlinePerBot] = await Promise.all([
+    const [coins, fruits, rewards, onlinePerBot, downtime] = await Promise.all([
       queryMetric("afkbot_coins_earned_total"),
       queryMetric("afkbot_fruits_earned_total"),
       queryMetric("afkbot_daily_rewards_total"),
       queryMetric("afkbot_bot_online"),
+      queryMetric("afkbot_downtime_seconds_total"),
     ]);
 
-    const botsMap: Record<string, { coins: number; fruits: number; rewards: number; online: boolean }> = {};
+    const botsMap: Record<string, { coins: number; fruits: number; rewards: number; online: boolean; downtimeSecs: number }> = {};
+
+    const empty = () => ({ coins: 0, fruits: 0, rewards: 0, online: false, downtimeSecs: 0 });
 
     for (const item of coins) {
       const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0, online: false };
+      if (!botsMap[u]) botsMap[u] = empty();
       botsMap[u].coins = Math.round(parseFloat(item.value[1]));
     }
 
     for (const item of fruits) {
       const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0, online: false };
+      if (!botsMap[u]) botsMap[u] = empty();
       botsMap[u].fruits = Math.round(parseFloat(item.value[1]));
     }
 
     for (const item of rewards) {
       const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0, online: false };
+      if (!botsMap[u]) botsMap[u] = empty();
       botsMap[u].rewards = Math.round(parseFloat(item.value[1]));
     }
 
     for (const item of onlinePerBot) {
       const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = { coins: 0, fruits: 0, rewards: 0, online: false };
+      if (!botsMap[u]) botsMap[u] = empty();
       botsMap[u].online = parseFloat(item.value[1]) === 1;
+    }
+
+    for (const item of downtime) {
+      const u = item.metric.username;
+      if (!botsMap[u]) botsMap[u] = empty();
+      botsMap[u].downtimeSecs = Math.round(parseFloat(item.value[1]));
     }
 
     const bots = Object.entries(botsMap)

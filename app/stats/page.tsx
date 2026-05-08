@@ -1,7 +1,14 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 
-type Bot = { username: string; coins: number; fruits: number; rewards: number; online: boolean };
+type Bot = { username: string; coins: number; fruits: number; rewards: number; online: boolean; downtimeSecs: number };
+
+function formatDowntime(secs: number) {
+  if (secs < 60) return `${secs}s`;
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  return h > 0 ? `${h}h ${m}m` : `${m}m`;
+}
 
 const NICKNAMES: Record<string, string> = {
   Alunewie:     "Alunewie",
@@ -84,7 +91,7 @@ export default function StatsPage() {
                   <th className="text-center px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>AFK</th>
                   <th className="text-right px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Coins</th>
                   <th className="text-right px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Fruits</th>
-                  <th className="text-right px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Rewards Seen</th>
+                  <th className="text-right px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Downtime</th>
                 </tr>
               </thead>
               <tbody>
@@ -102,7 +109,9 @@ export default function StatsPage() {
                     </td>
                     <td className="px-5 py-3 text-right">{bot.coins.toLocaleString()}</td>
                     <td className="px-5 py-3 text-right">{bot.fruits}</td>
-                    <td className="px-5 py-3 text-right">{bot.rewards}</td>
+                    <td className="px-5 py-3 text-right font-mono text-xs" style={{ color: bot.downtimeSecs > 0 ? "#f87171" : "rgba(232,232,240,0.4)" }}>
+                      {formatDowntime(bot.downtimeSecs)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
