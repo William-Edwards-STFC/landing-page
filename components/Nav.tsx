@@ -36,6 +36,15 @@ export default function Nav() {
           ))}
           <li>
             <a
+              href="/stats"
+              className="text-sm transition-colors duration-200 hover:text-white"
+              style={{ color: "rgba(232,232,240,0.6)" }}
+            >
+              Stats
+            </a>
+          </li>
+          <li>
+            <a
               href="/admin"
               className="px-4 py-1.5 rounded-full text-xs font-medium transition-opacity duration-200 hover:opacity-80"
               style={{ background: "var(--accent)", color: "white" }}
