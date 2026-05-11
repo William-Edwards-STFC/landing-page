@@ -68,7 +68,7 @@ export default function StatsPage() {
         <p className="text-sm" style={{ color: "#f87171" }}>Could not reach metrics server.</p>
       ) : (
         <>
-          <div className="grid grid-cols-3 gap-4 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
             <div className="p-6 rounded-2xl" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
               <p className="text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--accent)" }}>Bots AFK</p>
               <p className="text-4xl font-bold">{botsOnline} <span className="text-lg font-normal" style={{ color: "rgba(232,232,240,0.4)" }}>/ {bots.length}</span></p>
@@ -83,8 +83,8 @@ export default function StatsPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid var(--border)" }}>
-            <table className="w-full text-sm">
+          <div className="rounded-2xl overflow-x-auto" style={{ border: "1px solid var(--border)" }}>
+            <table className="w-full text-sm" style={{ minWidth: "520px" }}>
               <thead>
                 <tr style={{ background: "var(--card)", borderBottom: "1px solid var(--border)" }}>
                   <th className="text-left px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Account</th>
