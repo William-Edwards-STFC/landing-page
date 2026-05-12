@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 
-type Bot = { username: string; coins: number; fruits: number; rewards: number; online: boolean; downtimeSecs: number };
+type Bot = { username: string; online: boolean; uptimeSecs: number; downtimeSecs: number };
 
 function formatDowntime(secs: number) {
   if (secs < 60) return `${secs}s`;
@@ -53,9 +53,9 @@ export default function StatsPage() {
     return () => clearInterval(interval);
   }, [fetchStats]);
 
-  const totalCoins = bots.reduce((sum, b) => sum + b.coins, 0);
-  const totalFruits = bots.reduce((sum, b) => sum + b.fruits, 0);
   const botsOnline = bots.filter((b) => b.online).length;
+  const totalUptime = bots.reduce((sum, b) => sum + b.uptimeSecs, 0);
+  const totalDowntime = bots.reduce((sum, b) => sum + b.downtimeSecs, 0);
 
   return (
     <div className="min-h-screen px-6 py-24 max-w-4xl mx-auto" style={{ color: "var(--foreground)" }}>
@@ -74,12 +74,12 @@ export default function StatsPage() {
               <p className="text-4xl font-bold">{botsOnline} <span className="text-lg font-normal" style={{ color: "rgba(232,232,240,0.4)" }}>/ {bots.length}</span></p>
             </div>
             <div className="p-6 rounded-2xl" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-              <p className="text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--accent)" }}>Total Coins</p>
-              <p className="text-4xl font-bold">{totalCoins.toLocaleString()}</p>
+              <p className="text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--accent)" }}>Total Uptime</p>
+              <p className="text-4xl font-bold">{formatDowntime(totalUptime)}</p>
             </div>
             <div className="p-6 rounded-2xl" style={{ background: "var(--card)", border: "1px solid var(--border)" }}>
-              <p className="text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--accent)" }}>Total Devil Fruits</p>
-              <p className="text-4xl font-bold">{totalFruits}</p>
+              <p className="text-xs font-mono tracking-widest uppercase mb-2" style={{ color: "var(--accent)" }}>Total Downtime</p>
+              <p className="text-4xl font-bold">{formatDowntime(totalDowntime)}</p>
             </div>
           </div>
 
@@ -88,9 +88,8 @@ export default function StatsPage() {
               <thead>
                 <tr style={{ background: "var(--card)", borderBottom: "1px solid var(--border)" }}>
                   <th className="text-left px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Account</th>
-                  <th className="text-center px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>AFK</th>
-                  <th className="text-right px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Coins</th>
-                  <th className="text-right px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Fruits</th>
+                  <th className="text-center px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Status</th>
+                  <th className="text-right px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Uptime</th>
                   <th className="text-right px-5 py-3 font-mono text-xs tracking-widest uppercase" style={{ color: "var(--accent)" }}>Downtime</th>
                 </tr>
               </thead>
@@ -107,8 +106,9 @@ export default function StatsPage() {
                     <td className="px-5 py-3 text-center text-xs font-mono" style={{ color: bot.online ? "#4ade80" : "#f87171" }}>
                       {bot.online ? "online" : "offline"}
                     </td>
-                    <td className="px-5 py-3 text-right">{bot.coins.toLocaleString()}</td>
-                    <td className="px-5 py-3 text-right">{bot.fruits}</td>
+                    <td className="px-5 py-3 text-right font-mono text-xs" style={{ color: "rgba(232,232,240,0.7)" }}>
+                      {formatDowntime(bot.uptimeSecs)}
+                    </td>
                     <td className="px-5 py-3 text-right font-mono text-xs" style={{ color: bot.downtimeSecs > 0 ? "#f87171" : "rgba(232,232,240,0.4)" }}>
                       {formatDowntime(bot.downtimeSecs)}
                     </td>
