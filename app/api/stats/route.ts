@@ -12,40 +12,26 @@ async function queryMetric(metric: string) {
 
 export async function GET() {
   try {
-    const [coins, fruits, rewards, onlinePerBot, downtime] = await Promise.all([
-      queryMetric("afkbot_coins_earned_total"),
-      queryMetric("afkbot_fruits_earned_total"),
-      queryMetric("afkbot_daily_rewards_total"),
+    const [onlinePerBot, uptime, downtime] = await Promise.all([
       queryMetric("afkbot_bot_online"),
+      queryMetric("afkbot_uptime_seconds_total"),
       queryMetric("afkbot_downtime_seconds_total"),
     ]);
 
-    const botsMap: Record<string, { coins: number; fruits: number; rewards: number; online: boolean; downtimeSecs: number }> = {};
+    const botsMap: Record<string, { online: boolean; uptimeSecs: number; downtimeSecs: number }> = {};
 
-    const empty = () => ({ coins: 0, fruits: 0, rewards: 0, online: false, downtimeSecs: 0 });
-
-    for (const item of coins) {
-      const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = empty();
-      botsMap[u].coins = Math.round(parseFloat(item.value[1]));
-    }
-
-    for (const item of fruits) {
-      const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = empty();
-      botsMap[u].fruits = Math.round(parseFloat(item.value[1]));
-    }
-
-    for (const item of rewards) {
-      const u = item.metric.username;
-      if (!botsMap[u]) botsMap[u] = empty();
-      botsMap[u].rewards = Math.round(parseFloat(item.value[1]));
-    }
+    const empty = () => ({ online: false, uptimeSecs: 0, downtimeSecs: 0 });
 
     for (const item of onlinePerBot) {
       const u = item.metric.username;
       if (!botsMap[u]) botsMap[u] = empty();
       botsMap[u].online = parseFloat(item.value[1]) === 1;
+    }
+
+    for (const item of uptime) {
+      const u = item.metric.username;
+      if (!botsMap[u]) botsMap[u] = empty();
+      botsMap[u].uptimeSecs = Math.round(parseFloat(item.value[1]));
     }
 
     for (const item of downtime) {
@@ -56,7 +42,7 @@ export async function GET() {
 
     const bots = Object.entries(botsMap)
       .map(([username, data]) => ({ username, ...data }))
-      .sort((a, b) => b.coins - a.coins);
+      .sort((a, b) => b.uptimeSecs - a.uptimeSecs);
 
     return NextResponse.json({ bots });
   } catch {
